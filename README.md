@@ -1,5 +1,18 @@
 # 🏛️ Meridian — Enterprise ERP, Fintech, Data Science & Multi-LLM Suite
 
+<p align="center">
+  <a href="https://meridian-fintech.streamlit.app/" target="_blank">
+    <img src="https://img.shields.io/badge/LIVE%20DEMO-Acessar%20Meridian%20ERP-10B981?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Demo"/>
+  </a>
+  <a href="https://github.com/jhow-gif/Meridian-ERP/actions/workflows/ci.yml" target="_blank">
+    <img src="https://github.com/jhow-gif/Meridian-ERP/actions/workflows/ci.yml/badge.svg" alt="CI Pipeline"/>
+  </a>
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12"/>
+  <img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-DC2626?style=for-the-badge" alt="Proprietary License"/>
+</p>
+
+> **Acesso à Demonstração Online:** [meridian-fintech.streamlit.app](https://meridian-fintech.streamlit.app/) *(ambiente de demonstração com dados simulados)*.
+
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Design_System_SaaS-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-Text--to--SQL_AppSec-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
