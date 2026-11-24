@@ -1,0 +1,27 @@
+# Interface Web & Dashboard SaaS
+streamlit
+
+# Engenharia e Ciência de Dados (Curva ABC, Z-Score, Forecast & Parquet)
+pandas
+numpy
+pyarrow
+
+# Exportação Executiva (Excel, Word, PowerPoint e PDF)
+openpyxl
+python-docx
+python-pptx
+fpdf2
+
+# Backend API, Webhooks & Validação (Meridian Fintech/ERP)
+fastapi
+uvicorn
+pydantic
+httpx
+requests
+
+# Orquestração Multi-LLM & Configuração
+google-genai
+python-dotenv
+
+# Testes Automatizados & CI/CD
+pytest
