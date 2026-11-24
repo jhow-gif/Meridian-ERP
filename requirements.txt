@@ -1,5 +1,6 @@
 # Interface Web & Dashboard SaaS
 streamlit
+plotly
 
 # Engenharia e Ciência de Dados (Curva ABC, Z-Score, Forecast & Parquet)
 pandas
