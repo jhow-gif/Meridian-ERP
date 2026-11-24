@@ -45,37 +45,33 @@ class TestMeridianFintechERP(unittest.TestCase):
     def _isolate_monitor(self, monitor):
         """Garante que o IntegrityMonitor use um integrity_hashes.json exclusivo no diretório temporário."""
         temp_db = self.base_path / "integrity_hashes.json"
-        for attr_name, attr_val in list(vars(monitor).items()):
-            if isinstance(attr_val, Path) and attr_val.name == "integrity_hashes.json":
-                setattr(monitor, attr_name, temp_db)
-            elif isinstance(attr_val, str) and attr_val.endswith("integrity_hashes.json"):
-                setattr(monitor, attr_name, str(temp_db))
-            elif isinstance(attr_val, dict):
-                cleaned = {
-                    k: v for k, v in attr_val.items()
-                    if str(self.base_path) in str(k)
-                }
-                if len(cleaned) != len(attr_val):
-                    setattr(monitor, attr_name, cleaned)
+        monitor.db_file = temp_db
+        monitor.hash_database = {
+            k: v for k, v in monitor.hash_database.items()
+            if str(self.base_path) in str(k)
+        }
+        monitor.critical_paths = [
+            p for p in monitor.critical_paths
+            if str(self.base_path) in str(p)
+        ]
+        monitor.modified_files.clear()
+        monitor.alert_messages.clear()
 
     def setUp(self):
         self.orig_cwd = os.getcwd()
         self.temp_dir = tempfile.TemporaryDirectory()
-        self.base_path = Path(self.temp_dir.name)
+        self.base_path = Path(self.temp_dir.name).resolve()
 
         # LIFO: restaura cwd primeiro e limpa temp_dir depois (evita erro de lock no Windows)
         self.addCleanup(self.temp_dir.cleanup)
         os.chdir(self.base_path)
         self.addCleanup(os.chdir, self.orig_cwd)
 
-        self.engine = FintechEngine(db_dir=str(self.base_path))
-        if hasattr(self.engine, "db") and hasattr(self.engine.db, "monitor"):
-            self.monitor = self.engine.db.monitor
-        else:
-            self.monitor = IntegrityMonitor()
-
+        # Cria e isola o monitor ANTES do FintechEngine para nunca poluir a raiz do projeto
+        self.monitor = IntegrityMonitor()
         self._isolate_monitor(self.monitor)
 
+        self.engine = FintechEngine(db_dir=str(self.base_path), system_monitor=self.monitor)
         self.hub = MeridianAgentHub(engine=self.engine, monitor=self.monitor)
         self.hub.log_file = self.base_path / "logs_agentes.json"
 
