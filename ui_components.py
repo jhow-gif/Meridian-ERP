@@ -41,8 +41,9 @@ def get_meridian_logo_svg(primary: str = "#2563eb", accent: str = "#38bdf8", siz
 def apply_meridian_theme(wl_config=None, is_logged_in: bool = True):
     """
     Injeta o sistema de estilos do dashdarkX.
-    - Se is_logged_in=False: oculta totalmente a sidebar e centraliza o login.
-    - Se is_logged_in=True: fixa a sidebar em 300px e remove o botão de minimizar.
+    - Se is_logged_in=False: oculta totalmente a sidebar e o header, centralizando o login.
+    - Se is_logged_in=True: exibe a sidebar responsiva (300px no PC, recolhível no PC e mobile)
+      com botões visíveis de fechar e reabrir em alto contraste.
     """
     primary = getattr(wl_config, "primary_color", "#0284c7") if wl_config else "#0284c7"
     secondary = getattr(wl_config, "secondary_color", "#2563eb") if wl_config else "#2563eb"
@@ -50,39 +51,108 @@ def apply_meridian_theme(wl_config=None, is_logged_in: bool = True):
 
     if is_logged_in:
         sidebar_lock_css = """
-        [data-testid="stSidebar"] {
-            min-width: 300px !important;
-            max-width: 300px !important;
-            width: 300px !important;
-            transform: translateX(0px) !important;
+        /* Mantém o header transparente ativo para o botão de reabrir a sidebar funcionar */
+        header[data-testid="stHeader"] {
+            display: flex !important;
             visibility: visible !important;
-            display: block !important;
+            background: transparent !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+            z-index: 999990 !important;
+        }
+        [data-testid="stToolbar"] {
+            display: flex !important;
+            visibility: visible !important;
+            background: transparent !important;
+        }
+
+        /* Oculta apenas os botões nativos do Streamlit (Deploy, menu superior e rodapé) */
+        [data-testid="stToolbarActions"],
+        [data-testid="stAppDeployButton"],
+        [data-testid="stMainMenu"],
+        [data-testid="stDecoration"],
+        #MainMenu,
+        footer {
+            display: none !important;
+        }
+
+        /* Visual da sidebar sem travar o recolhimento nativo do Streamlit */
+        section[data-testid="stSidebar"] {
             background-color: var(--dd-bg-darker) !important;
             border-right: 1px solid var(--dd-neutral-darker) !important;
             box-shadow: 0 10px 30px rgba(2, 6, 23, 0.65);
         }
-        [data-testid="stSidebar"] > div:first-child {
+        section[data-testid="stSidebar"][aria-expanded="true"] {
             width: 300px !important;
+            max-width: 300px !important;
         }
-        [data-testid="collapsedControl"],
+        section[data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
+            width: 100% !important;
+        }
+
+        /* Mantém o cabeçalho da sidebar e o botão de fechar sempre acessíveis */
+        [data-testid="stSidebarHeader"] {
+            display: flex !important;
+            visibility: visible !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0.65rem 0.85rem 0.2rem 0.85rem !important;
+            min-height: 2.6rem !important;
+        }
+
         [data-testid="stSidebarCollapseButton"],
-        [data-testid="stSidebarHeader"],
-        button[kind="header"],
-        button[title="Close sidebar"],
-        button[aria-label="Close sidebar"] {
-            display: none !important;
-            visibility: hidden !important;
-            width: 0 !important;
-            height: 0 !important;
-            pointer-events: none !important;
+        [data-testid="stExpandSidebarButton"],
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="collapsedControl"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            z-index: 999999 !important;
+        }
+
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="stExpandSidebarButton"] button,
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="collapsedControl"] button {
+            background: rgba(11, 23, 57, 0.94) !important;
+            border: 1px solid var(--brand-accent) !important;
+            border-radius: 8px !important;
+            color: #ffffff !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
+            opacity: 1 !important;
+            box-shadow: 0 4px 14px rgba(2, 6, 23, 0.55) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        [data-testid="stSidebarCollapseButton"] button:hover,
+        [data-testid="stExpandSidebarButton"] button:hover,
+        [data-testid="stSidebarCollapsedControl"] button:hover,
+        [data-testid="collapsedControl"] button:hover {
+            background: var(--brand-primary) !important;
+            border-color: #ffffff !important;
+        }
+
+        [data-testid="stSidebarCollapseButton"] svg,
+        [data-testid="stExpandSidebarButton"] svg,
+        [data-testid="stSidebarCollapsedControl"] svg,
+        [data-testid="collapsedControl"] svg {
+            fill: #ffffff !important;
+            color: #ffffff !important;
         }
         """
     else:
         sidebar_lock_css = """
+        header[data-testid="stHeader"],
         [data-testid="stSidebar"],
         [data-testid="collapsedControl"],
+        [data-testid="stExpandSidebarButton"],
+        [data-testid="stSidebarCollapsedControl"],
         [data-testid="stSidebarCollapseButton"],
-        [data-testid="stSidebarHeader"] {
+        [data-testid="stSidebarHeader"],
+        #MainMenu,
+        footer {
             display: none !important;
             width: 0px !important;
             min-width: 0px !important;
@@ -119,10 +189,9 @@ def apply_meridian_theme(wl_config=None, is_logged_in: bool = True):
         }}
 
         [data-testid="stSidebarNav"] {{display: none !important;}}
-        header[data-testid="stHeader"] {{display: none !important;}}
 
         .block-container {{
-            padding-top: 1.8rem !important;
+            padding-top: 2.6rem !important;
             padding-bottom: 2.5rem !important;
             max-width: 96% !important;
         }}
@@ -540,6 +609,30 @@ def apply_meridian_theme(wl_config=None, is_logged_in: bool = True):
             color: #ffffff !important; text-decoration: none !important;
             font-weight: 600; padding: 11px 16px; border-radius: 8px;
             margin-top: 10px;
+        }}
+
+        /* Responsividade Mobile */
+        @media (max-width: 768px) {{
+            section[data-testid="stSidebar"][aria-expanded="true"] {{
+                width: 84vw !important;
+                max-width: 300px !important;
+                min-width: 0 !important;
+            }}
+            section[data-testid="stSidebar"][aria-expanded="true"] > div:first-child {{
+                width: 100% !important;
+            }}
+            .block-container {{
+                padding-top: 3.4rem !important;
+                padding-left: 0.85rem !important;
+                padding-right: 0.85rem !important;
+                max-width: 100% !important;
+            }}
+            .dd-paper, .ff-hero {{
+                padding: 16px 16px !important;
+            }}
+            .dd-kpi-val {{
+                font-size: 1.38rem !important;
+            }}
         }}
         </style>
         """,
